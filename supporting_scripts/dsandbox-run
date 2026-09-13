@@ -45,4 +45,4 @@ esac
 USER_ID=$(id -u)
 XAUTH=$(find /run/user/$USER_ID -name "xauth*" 2>/dev/null)
 echo $CONTAINER_ID $EXTRA_SANDBOX_OPTS $SHARED_DIR
-cd $HOME && exec sudo systemd-run --shell -pUser=$USER_ID -pPrivateDevices=yes -pPrivateTmp=yes -pInaccessiblePaths=/run/host -pBindPaths=/home/$USER/container_homes/$CONTAINER_ID:/var/home/$USER\ /home/$USER/container_homes/$CONTAINER_ID:/home/$USER\ $SHARED_DIR:$SHARED_DIR\ /run/host/run/user/$USER_ID:/run/user/$USER_ID --setenv=XAUTHORITY=$XAUTH --setenv=DISPLAY=:0 --setenv=XDG_RUNTIME_DIR=/run/user/$USER_ID $EXTRA_SANDBOX_OPTS
+cd $HOME && exec sudo systemd-run --shell -pUser=$USER_ID -pPrivateTmp=yes -pInaccessiblePaths=/run/host -pBindPaths=/home/$USER/container_homes/$CONTAINER_ID:/var/home/$USER\ /home/$USER/container_homes/$CONTAINER_ID:/home/$USER\ $SHARED_DIR:$SHARED_DIR\ /run/host/run/user/$USER_ID:/run/user/$USER_ID --setenv=XAUTHORITY=$XAUTH --setenv=DISPLAY=:0 --setenv=XDG_RUNTIME_DIR=/run/user/$USER_ID $EXTRA_SANDBOX_OPTS

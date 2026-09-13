@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+CONTAINER=$1
+# enter a distrobox container, execute the sandboxing script automatically
+distrobox enter $CONTAINER -- $HOME/.local/bin/supporting_scripts/dsandbox-run

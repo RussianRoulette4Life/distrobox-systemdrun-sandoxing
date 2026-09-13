@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+if [[ -z $CONTAINER_ID ]]; then
+  echo "No \$CONTAINER_ID set, you are most likely not running within a container. Exiting."
+  exit 1
+fi
+# set the shared folder
+if [[ -d $HOME/Public ]]; then
+  SHARED_DIR=$HOME/Public
+elif [[ -d $HOME/Общедоступные ]]; then
+  SHARED_DIR=$HOME/Общедоступные
+else
+  echo "no suitable shared dir. exiting"
+  exit 2
+fi
+if [[ ! -d $HOME/container_homes/$CONTAINER_ID ]]; then
+  mkdir -p $HOME/container_homes/$CONTAINER_ID
+fi
+
+# selector
+clear
+echo -e "what do ya want\n\t1. regular sandbox\n\t2. no inet\n\t3. no sudo\n\t4. no inet and no sudo"
+
+read x
+
+case $x in
+"1")
+  EXTRA_SANDBOX_OPTS=
+  ;;
+"2")
+  EXTRA_SANDBOX_OPTS="-pPrivateNetwork=yes"
+  ;;
+"3")
+  EXTRA_SANDBOX_OPTS="-pNoNewPrivileges=yes"
+  ;;
+"4")
+  EXTRA_SANDBOX_OPTS="-pNoNewPrivileges=yes -pPrivateNetwork=yes"
+  ;;
+*)
+  echo "what"
+  sleep 1
+  exit 69
+  ;;
+esac
+
+USER_ID=$(id -u)
+XAUTH=$(find /run/user/$USER_ID -name "xauth*" 2>/dev/null)
+echo $CONTAINER_ID $EXTRA_SANDBOX_OPTS $SHARED_DIR
+cd $HOME && exec sudo systemd-run --shell -pUser=$USER_ID -pPrivateDevices=yes -pPrivateTmp=yes -pInaccessiblePaths=/run/host -pBindPaths=/home/$USER/container_homes/$CONTAINER_ID:/var/home/$USER\ /home/$USER/container_homes/$CONTAINER_ID:/home/$USER\ $SHARED_DIR:$SHARED_DIR\ /run/host/run/user/$USER_ID:/run/user/$USER_ID --setenv=XAUTHORITY=$XAUTH --setenv=DISPLAY=:0 --setenv=XDG_RUNTIME_DIR=/run/user/$USER_ID $EXTRA_SANDBOX_OPTS

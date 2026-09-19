@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
 CONTAINER=$1
+APP=$2
+SANDBOXING_OPTION=$3
 # enter a distrobox container, execute the sandboxing script automatically
-distrobox enter $CONTAINER -- $HOME/.local/bin/supporting_scripts/dsandbox-run
+distrobox enter $CONTAINER -- $HOME/.local/bin/supporting_scripts/dsandbox-run "$APP" "$SANDBOXING_OPTION"

@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+APP=$1
+SANDBOXING_OPTION=$2
 if [[ -z $CONTAINER_ID ]]; then
   echo "No \$CONTAINER_ID set, you are most likely not running within a container. Exiting."
   exit 1
@@ -18,9 +20,13 @@ fi
 
 # selector
 clear
-echo -e "what do ya want\n\t1. regular sandbox\n\t2. no inet\n\t3. no sudo\n\t4. no inet and no sudo"
+if [[ $SANDBOXING_OPTION == "" ]]; then
+	echo -e "what do ya want\n\t1. regular sandbox\n\t2. no inet\n\t3. no sudo\n\t4. no inet and no sudo"
 
-read x
+	read x
+else
+	x=$SANDBOXING_OPTION
+fi
 
 case $x in
 "1")
@@ -41,8 +47,9 @@ case $x in
   exit 69
   ;;
 esac
-
+if [[ $APP == "" ]]; then
+	APP=$SHELL
+fi
 USER_ID=$(id -u)
 XAUTH=$(find /run/user/$USER_ID -name "xauth*" 2>/dev/null)
-echo $CONTAINER_ID $EXTRA_SANDBOX_OPTS $SHARED_DIR
-cd $HOME && exec sudo systemd-run --shell -pUser=$USER_ID -pPrivateTmp=yes -pInaccessiblePaths=/run/host -pBindPaths=/home/$USER/container_homes/$CONTAINER_ID:/var/home/$USER\ /home/$USER/container_homes/$CONTAINER_ID:/home/$USER\ $SHARED_DIR:$SHARED_DIR\ /run/host/run/user/$USER_ID:/run/user/$USER_ID --setenv=XAUTHORITY=$XAUTH --setenv=DISPLAY=:0 --setenv=XDG_RUNTIME_DIR=/run/user/$USER_ID $EXTRA_SANDBOX_OPTS
+cd $HOME && exec sudo systemd-run --same-dir --pty --wait --collect --service-type=exec -pUser=$USER_ID -pPrivateTmp=yes -pInaccessiblePaths=/run/host -pBindPaths=/home/$USER/container_homes/$CONTAINER_ID:/var/home/$USER\ /home/$USER/container_homes/$CONTAINER_ID:/home/$USER\ $SHARED_DIR:$SHARED_DIR\ /run/host/run/user/$USER_ID:/run/user/$USER_ID --setenv=XAUTHORITY=$XAUTH --setenv=DISPLAY=:0 --setenv=XDG_RUNTIME_DIR=/run/user/$USER_ID $EXTRA_SANDBOX_OPTS $APP

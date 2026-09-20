@@ -21,11 +21,11 @@ fi
 # selector
 clear
 if [[ $SANDBOXING_OPTION == "" ]]; then
-	echo -e "what do ya want\n\t1. regular sandbox\n\t2. no inet\n\t3. no sudo\n\t4. no inet and no sudo"
+  echo -e "what do ya want\n\t1. regular sandbox\n\t2. no inet\n\t3. no sudo\n\t4. no inet and no sudo"
 
-	read x
+  read x
 else
-	x=$SANDBOXING_OPTION
+  x=$SANDBOXING_OPTION
 fi
 
 case $x in
@@ -48,8 +48,8 @@ case $x in
   ;;
 esac
 if [[ $APP == "" ]]; then
-	APP=$SHELL
+  APP=$SHELL
 fi
 USER_ID=$(id -u)
 XAUTH=$(find /run/user/$USER_ID -name "xauth*" 2>/dev/null)
-cd $HOME && exec sudo systemd-run --same-dir --pty --wait --collect --service-type=exec -pUser=$USER_ID -pPrivateTmp=yes -pInaccessiblePaths=/run/host -pBindPaths=/home/$USER/container_homes/$CONTAINER_ID:/var/home/$USER\ /home/$USER/container_homes/$CONTAINER_ID:/home/$USER\ $SHARED_DIR:$SHARED_DIR\ /run/host/run/user/$USER_ID:/run/user/$USER_ID --setenv=XAUTHORITY=$XAUTH --setenv=DISPLAY=$DISPLAY --setenv=XDG_RUNTIME_DIR=/run/user/$USER_ID $EXTRA_SANDBOX_OPTS $APP
+cd $HOME && exec sudo systemd-run --same-dir --pty --wait --collect --service-type=exec -pUser=$USER_ID -pPrivateTmp=yes -pInaccessiblePaths=/run/host -pBindPaths=/home/$USER/container_homes/$CONTAINER_ID:/var/home/$USER\ /usr/bin/bash:/usr/bin/distrobox-host-exec\ /home/$USER/container_homes/$CONTAINER_ID:/home/$USER\ $SHARED_DIR:$SHARED_DIR\ /run/host/run/user/$USER_ID:/run/user/$USER_ID --setenv=XAUTHORITY=$XAUTH --setenv=DISPLAY=$DISPLAY --setenv=XDG_RUNTIME_DIR=/run/user/$USER_ID $EXTRA_SANDBOX_OPTS $APP
